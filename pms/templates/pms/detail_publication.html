@@ -1,0 +1,255 @@
+{%extends "./base.html"%}
+{% load static %}
+{%block cssPart%}
+	<link href="{% static 'pms/css/bootstrap.min.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/font-awesome/css/font-awesome.css'%}" rel="stylesheet">
+	<link href="{% static 'pms/css/plugins/datapicker/datepicker3.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/plugins/iCheck/custom.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/animate.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/style.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'%}" rel="stylesheet">
+	<link href="{% static 'pms/css/plugins/sweetalert/sweetalert2.min.css'%}" rel="stylesheet">
+	<style>
+        .divBackground{
+            border: 1px solid rgba(0,0,0,0.02);
+            background: rgba(0,0,0,0.03);
+            padding: 10px;
+        }
+		textarea{
+			min-height: 394px;
+		}
+		.buttonWidth {
+            width: 170px;
+        }
+	</style>
+{%endblock%}
+{%block divPart%}
+		<div class="row">
+			<div class="ibox-title">
+				<h3><strong>Publication Details</strong></h3>
+			</div>
+			{%if publication%}
+				<form action="{%url 'order_publication'%}" method="post">
+					{% csrf_token %}
+					<div class="ibox-content m-b-sm border-bottom">
+						<div class="row">
+							<div class="col-sm-6">
+								<div class="form-group">
+									<label class="control-label" for="title">Title</label>
+									<input type="text" id="title" name="title" value="{{publication.title}}" class="form-control" readonly>
+									<input type="hidden" id="publication_id" name="publication_id" value="{{publication.id}}">
+								</div>
+								<div class="form-group">
+									<label class="control-label" for="keywords">Keywords</label>
+									<input type="text" id="keywords" name="keywords" value="{{publication.keywords}}" class="form-control" readonly>
+								</div>
+								<div class="form-group">
+									<label class="control-label" for="authors">Authors</label>
+									<input type="text" id="authors" name="authors" class="form-control" value="{{publication.authors}}" readonly>
+								</div>
+								<div class="form-group">
+									<label class="control-label" for="institution">Institution</label>
+									<input type="text" id="institution" name="institution" class="form-control" value="{{publication.institution}}" readonly>
+								</div>
+								<div class="row">
+									<div class="col-sm-6">
+										<div class="form-group">
+											<label class="control-label" for="category">Category</label>
+											<select name="category" id="category" class="form-control" disabled>
+												<option value="1" {%if publication.category == 1%}selected=""{%endif%}>Conference</option>
+												<option value="0" {%if publication.category == 0%}selected=""{%endif%}>Journal</option>
+											</select>
+											<input type="hidden" id="category_form" name="category_form" value="publication.category">
+										</div>
+									</div>
+									<div class="col-sm-6">
+										<div class="form-group" id="date1">
+										<label class="control-label" for="publication_date">Publication Date</label>
+										<div class="input-group date">
+											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+											<input type="text" id="publication_date" name="publication_date" class="form-control" value="{{publication.publication_date}}" readonly>
+										</div>
+									</div>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-6">
+										<div class="form-group">
+											<label class="control-label" for="ownership">Ownership</label>
+											<select name="ownership" id="ownership" class="form-control" disabled>
+												<option value="1" {%if publication.public_or_not == 1%}selected=""{%endif%}>Public</option>
+												<option value="0" {%if publication.public_or_not == 0%}selected=""{%endif%}>Private</option>
+											</select>
+											<input type="hidden" id="public_or_not" name="public_or_not" value="{{publication.public_or_not}}">
+										</div>
+									</div>
+									<div class="col-sm-6">
+										<div class="form-group">
+											<label class="control-label" for="price">Price</label>
+											<div class="input-group">
+												<span class="input-group-addon">$</span>
+												<input type="text" id="price" name="price"class="form-control" value="{{publication.price}}" readonly>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-6">
+								<div  class="form-group">
+									<label class="control-label" for="abstract">Abstract</label>
+									<textarea id="abstract" name="abstract" class="form-control" placeholder="Write some abstract for your publication" readonly>{{publication.abstract}}</textarea>
+								</div>
+								<input type="hidden" id="operation">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-4">
+								<button class="btn btn-white" type="button" onclick="gotoSearch()"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Go back to publication list</button>
+								
+							</div>
+							<div class="col-sm-8">
+								{%if userId == uploaderId %}
+									<button id="editOrSaveButton" class="btn btn-white pull-right buttonWidth" onclick="editOrSave()" type="button">Edit this publication</button>
+								{%elif not purchased%}
+									<button id="buyButton" class="btn btn-primary pull-right buttonWidth" type="submit"><i class="fa fa fa-shopping-cart"></i>&nbsp;&nbsp;&nbsp;Buy this publication</button>
+								{%endif%}
+							</div>
+						</div>
+					</div>
+				</form>
+			{%endif%}
+		</div>
+{%endblock%}
+{%block jsPart%}
+    <!-- Mainly scripts -->
+    <script src="{% static 'pms/js/jquery-2.1.1.js'%}"></script>
+    <script src="{% static 'pms/js/bootstrap.min.js'%}"></script>
+    <script src="{% static 'pms/js/plugins/metisMenu/jquery.metisMenu.js'%}"></script>
+    <script src="{% static 'pms/js/plugins/slimscroll/jquery.slimscroll.min.js'%}"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="{% static 'pms/js/inspinia.js' %}"></script>
+    <script src="{% static 'pms/js/plugins/pace/pace.min.js' %}"></script>
+	<!-- iCheck -->
+    <script src="{% static 'pms/js/plugins/iCheck/icheck.min.js' %}"></script>
+	<!-- Data picker -->
+	<script src="{% static 'pms/js/plugins/datapicker/bootstrap-datepicker.js' %}"></script>
+	<!-- Sweet alert -->
+    <script src="{% static 'pms/js/plugins/sweetalert/sweetalert2.min.js'%}"></script>
+	<script src="{% static 'pms/js/js.cookie.js'%}"></script>
+	<script>
+		function editOrSave(){
+			var editOrSave = $("#operation").val();
+			if(editOrSave==="" || editOrSave === "edit"){
+				$("#operation").val("save");
+				$("#editOrSaveButton").text("Save this publication");
+				$("#title").prop("readonly", false);
+				$("#authors").prop("readonly", false);
+				$("#keywords").prop("readonly", false);
+				$("#institution").prop("readonly", false);
+				$("#category").prop("disabled", false);
+				$("#ownership").prop("disabled", false);
+				$("#price").prop("readonly", false);
+				$("#publication_date").prop("readonly", false);
+				var publication_date = $('#date1 .input-group.date');
+				publication_date.datepicker("enable");
+				$("#abstract").prop("readonly", false);
+				
+			}else{
+				var publication_id = $("#publication_id").val();
+				var title = $("#title").val();
+				var authors = $("#authors").val();
+				var keywords = $("#keywords").val();
+				var institution = $("#institution").val();
+				var category = $("#category").val();
+				var publication_date = $("#publication_date").val();
+				var public_or_not = $("#ownership").val();
+				var price = $("#price").val();
+				var publication_abstract = $("#abstract").val();
+				
+				var csrftoken = Cookies.get("csrftoken");
+				function csrfSafeMethod(method) {
+                    // these HTTP methods do not require CSRF protection
+                    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                }
+				$.ajaxSetup({
+                                beforeSend: function(xhr, settings) {
+                                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                                    }
+                                }
+                            });
+				var posting = $.post("{%url 'save_publication'%}", {
+													publication_id: publication_id,
+            										title: title,
+            										authors: authors,
+            										keywords: keywords,
+            										institution: institution,
+            										category: category,
+													publication_date: publication_date,
+            										public_or_not: public_or_not,
+            										price: price,
+            										publication_abstract: publication_abstract
+            								});
+				
+				posting.done(function(data){
+					$("#operation").val("edit");
+					$("#title").prop("readonly", true);
+					$("#authors").prop("readonly", true);
+					$("#keywords").prop("readonly", true);
+					$("#institution").prop("readonly", true);
+					$("#category").prop("disabled", true);
+					$("#ownership").prop("disabled", true);
+					$("#price").prop("readonly", true);
+					$("#publication_date").prop("readonly", true);
+					var publication_date = $('#date1 .input-group.date');
+					publication_date.datepicker("enable");
+					$("#abstract").prop("readonly", true);
+					$("#editOrSaveButton").text("Save this publication");
+					swal({
+						title:"Success", 
+						text: "Publication was edited successfully!", 
+						type: "success",
+						confirmButtonClass: 'btn btn-primary m-b buttonWidth',
+						buttonsStyling: false
+					});
+				});
+			}
+		}
+	</script>
+	<script>
+		function gotoSearch(){
+			$(location).prop("href", "{%url 'search_publication'%}")
+		}
+	</script>
+{%endblock%}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

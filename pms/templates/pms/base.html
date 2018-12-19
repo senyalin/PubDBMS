@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apache Uncertainty Calibration System</title>
+	{%block cssPart%}{%endblock%}
+</head>
+
+<body>
+
+    <div id="wrapper">
+		<!--left navigation part, including the login user info and the function tree-->
+		<nav class="navbar-default navbar-static-side" role="navigation">
+			<div class="sidebar-collapse">
+				
+    <ul class="nav metismenu" id="side-menu">
+      <li class="nav-header"> 
+        <div> <span> <img alt="image" class="img-circle" src="{% static 'pms/img/atm.jpg'%}"> 
+          </span> <span class="clear"> <span class="block m-t-xs" style="color:#DFE4ED"> 
+          <strong class="font-bold">{{username}}</strong></span> <span class="text-muted text-xs block">Administrator</span> 
+          </span> </div>
+      </li>
+      <li> <a href="#"><i class="fa fa-file-o"></i> <span class="nav-label">Publications</span></a> 
+        <ul class="nav nav-second-level collapse">
+          <li> <a href="{%url 'upload_publication'%}"><i class="fa fa-upload"></i> 
+            <span class="nav-label">Upload</span></a> </li>
+          <li> <a href="{%url 'search_publication'%}"><i class="fa fa-search"></i> 
+            <span class="nav-label">Search and Process</span></a> </li>
+        </ul>
+      </li>
+    </ul>
+			</div>
+		</nav>
+		<!--right part-->
+        <div id="page-wrapper" class="gray-bg" style="min-height: 778px;">
+			
+    <div class="row border-bottom"> 
+      <!--header-->
+      <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0"> 
+      <ul class="nav navbar-top-links navbar-right">
+        <li> <span class="m-r-sm text-muted welcome-message">Welcome to Apache 
+          Uncertainty Calibration System. Your credit point balance: <span class="text-navy">$<strong>{{balance}}</strong></span></span> 
+        </li>
+        <li> <a href="{%url 'logout'%}"> <i class="fa fa-sign-out"></i> 
+          Log out </a> </li>
+      </ul>
+      </nav> </div>
+			{%block divPart%}{%endblock%}
+        </div>
+    </div>
+
+</body>
+{%block jsPart%}{%endblock%}
+
+</html>

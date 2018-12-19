@@ -1,0 +1,131 @@
+{%extends "./base.html"%}
+{% load static %}
+{%block cssPart%}
+	<link href="{% static 'pms/css/bootstrap.min.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/font-awesome/css/font-awesome.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/animate.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/style.css'%}" rel="stylesheet">
+	<link href="{% static 'pms/css/plugins/dropzone/dropzone.css'%}" rel="stylesheet">
+	<link href="{% static 'pms/css/plugins/dataTables/datatables.min.css' %}" rel="stylesheet">
+	<style>
+        .divBackground{
+            border: 1px solid rgba(0,0,0,0.02);
+            background: rgba(0,0,0,0.05);
+            padding: 1em;
+        }
+    </style>
+{%endblock%}
+
+{%block divPart%}
+			<div class="row">
+				<div class="ibox-title">
+					<h3><strong>Stored Publications</strong></h3>
+				</div>
+				<div class="ibox-content">
+                        <div class="table-responsive">
+							<table class="table table-striped table-bordered table-hover dataTables-example" >
+							<thead>
+							<tr>
+								<th width="300px">Title</th>
+								<th width="250px">Authors</th>
+								<th>Category</th>
+								<th>Pub_Date</th>
+								<th width="50px">Ownership</th>
+								<th>Origin</th>
+								<th>Price</th>
+								<th>Detail</th>
+								<th>Processing</th>
+							</tr>
+							</thead>
+							{% if dataList %}
+							<tbody>
+								{% for publication, uploaderName, processing in dataList %}
+									<tr class="gradeX">
+										<td>{{publication.title|truncatechars:90}}</td>
+										<td>{{publication.authors|truncatechars:90}}</td>
+										<td>
+										{% if publication.category == 1%}
+											Conference
+										{% else %}
+											Journal
+										{% endif %}
+										</td>
+										<td>{{publication.publication_date}}</td>
+										<td>
+										{% if publication.public_or_not == 1%}
+											Public
+										{% else %}
+											Private
+										{% endif %}
+										</td>
+										<td>{{uploaderName}}</td>
+										<td>{{publication.price}}</td>
+										<td>
+											<a href="{%url 'detail_publication' publication.id%}">Detail</a>
+										</td>
+										<td>
+                                        {%if processing == 1%}
+                                            <a href="{%url 'process_publication' publication.id%}">Processing</a>
+                                        {%endif%}
+                                  </td>
+									</tr>
+								{% endfor %}
+							</tbody>
+							{% endif %}
+							<tfoot>
+							<tr>
+								<th>Title</th>
+								<th>Authors</th>
+								<th>Category</th>
+								<th>Pub_Date</th>
+								<th>Ownership</th>
+								<th>Origin</th>
+								<th>Price</th>
+								<th>Detail</th>
+								<th>Processing</th>
+							</tr>
+							</tfoot>
+							</table>
+                        </div>
+                    </div>
+			</div>
+{%endblock%}
+
+{%block jsPart%}
+    <!-- Mainly scripts -->
+    <script src="{% static 'pms/js/jquery-2.1.1.js'%}"></script>
+    <script src="{% static 'pms/js/bootstrap.min.js'%}"></script>
+    <script src="{% static 'pms/js/plugins/metisMenu/jquery.metisMenu.js'%}"></script>
+    <script src="{% static 'pms/js/plugins/slimscroll/jquery.slimscroll.min.js'%}"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="{% static 'pms/js/inspinia.js' %}"></script>
+    <script src="{% static 'pms/js/plugins/pace/pace.min.js' %}"></script>
+	<script src="{% static 'pms/js/plugins/dataTables/datatables.min.js' %}"></script>
+	
+	<script>
+        $(document).ready(function(){
+            $('.dataTables-example').DataTable({
+                dom: '<"html5buttons"B>lTfgitp',
+                buttons: [
+                    { extend: 'copy'},
+                    {extend: 'csv'},
+                    {extend: 'excel', title: 'ExampleFile'},
+                    {extend: 'pdf', title: 'ExampleFile'},
+
+                    {extend: 'print',
+                     customize: function (win){
+                            $(win.document.body).addClass('white-bg');
+                            $(win.document.body).css('font-size', '10px');
+
+                            $(win.document.body).find('table')
+                                    .addClass('compact')
+                                    .css('font-size', 'inherit');
+                    }
+                    }
+                ]
+
+            });
+        });
+    </script>
+{%endblock%}

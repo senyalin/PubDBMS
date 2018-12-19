@@ -1,0 +1,338 @@
+{%extends "./base.html"%}
+{% load static %}
+{%block cssPart%}
+    <link href="{% static 'pms/css/plugins/toastr/toastr.min.css'%}" rel="stylesheet">
+	<link href="{% static 'pms/css/bootstrap.min.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/font-awesome/css/font-awesome.css'%}" rel="stylesheet">
+	<link href="{% static 'pms/css/plugins/datapicker/datepicker3.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/plugins/iCheck/custom.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/animate.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/style.css'%}" rel="stylesheet">
+	<link href="{% static 'pms/css/plugins/dropzone/dropzone.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'%}" rel="stylesheet">
+	<link href="{% static 'pms/css/plugins/sweetalert/sweetalert2.min.css'%}" rel="stylesheet">
+	<link href="{% static 'pms/css/plugins/ladda/ladda-themeless.min.css'%}" rel="stylesheet">
+	<style>
+        .divBackground{
+            border: 1px solid rgba(0,0,0,0.02);
+            background: rgba(0,0,0,0.04);
+            padding: 10px;
+            padding-top: 6px;
+			padding-left: 0px;
+			padding-right: 0px;
+            padding-bottom: 1px;
+        }
+        .buttonWidth {
+            width: 100px;
+        }
+        .dropzoneCSS{
+            height: 455px;        
+        }
+    </style>
+{%endblock%}
+	
+{%block divPart%}
+			<div class="row">
+				<div class="ibox-title">
+					<h3><strong>Upload GIS files</strong></h3>
+				</div>
+				<div class="ibox-content">
+					<div class="row divBackground">
+							<form action="" method="post" enctype="multipart/form-data" id="dropzoneForm" >
+								<div class="col-sm-4 ">
+                                
+									{% csrf_token %}
+                                    <div class="form-group" id="date1">
+										<label class="control-label" for="data_time">Data Time</label>
+										<div class="input-group date">
+											<span class="input-group-addon"><i class="fa fa-calendar"></i></span><input type="text" id="data_time" name="data_time" placeholder="When was data generated" class="form-control">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="resolution">Resolution *</label>
+										<input type="text" name="resolution" placeholder="meters per pixel" class="form-control" required="">
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="source">Source</label>
+										<input type="text" name="source" placeholder="Data origin" class="form-control">
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="price">Price</label>
+										<div class="input-group date">
+											<span class="input-group-addon">$</span>
+											<input type="text" name="price" placeholder="Data price if public" class="form-control">
+										</div>
+									</div>
+									
+									<div class="form-group">
+										<label class="control-label" for="uploader">Uploader</label>
+										<input type="text" name="uploader" value="{{username}}" class="form-control">
+									</div>
+									
+									<div class="form-group" id="date2">
+										<label class="control-label" for="upload_time">Upload Time</label>
+										<div class="input-group date">
+											<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+											<input name="upload_time" type="text" class="form-control">
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="control-label" for="public_or_not">Ownership</label>
+										<fieldset>
+										<div class="i-checks">
+										<label class=""> 
+										<div class="iradio_square-green" style="position: relative;">
+											<input type="radio" value="1" name="public_or_not" style="position: absolute; opacity: 0;" checked>
+										<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div> <i></i> Public &nbsp;&nbsp;&nbsp;&nbsp;</label>
+										
+										<label class=""> 
+										<div class="iradio_square-green" style="position: relative;">
+											<input type="radio" value="0" name="public_or_not" style="position: absolute; opacity: 0;">
+										<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div><i></i> Private </label></div>
+										</fieldset>
+									</div>
+									
+									<div class="form-group" id="tileGeneration">
+										<label class="i-checks control-label"> 
+											<div class="icheckbox_square-green" style="position: relative;">
+												<input type="checkbox" id="tiled_or_not" name="tiled_or_not" value="1" style="position: absolute; opacity: 0;">
+											<ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div>
+											Generating Tiles?
+										</label>
+										<input type="text" id="tile_size" name="tile_size" placeholder="Tile size" class="form-control" disabled required="">
+									</div>
+									
+                                    <div>
+                                        <button class="ladda-button ladda-button-demo btn btn-primary full-width m-b " id="upload_all" data-style="zoom-in" type="button">
+											<strong>Upload</strong>
+										</button>
+                                    </div>
+								</div>
+								<div class="col-sm-8">
+									<div  class="form-group">
+										<label class="control-label" for="description">Description</label>
+										<textarea id="description" name="description" class="form-control" placeholder="Write some description for your data" rows="5"></textarea>
+								   </div>
+									<div id="dropzoneDiv" class="form-group dropzone dropzoneCSS">
+										<label class="control-label">DropZone Area</label>
+										<div class="dropzone-previews" ></div>
+									</div>
+									
+								</div>
+							</form>
+                        </div>
+													
+				</div>
+			</div>
+{%endblock%}
+
+{%block jsPart%}
+    <!-- Mainly scripts -->
+    <script src="{% static 'pms/js/jquery-2.1.1.js'%}"></script>
+    <script src="{% static 'pms/js/bootstrap.min.js'%}"></script>
+    <script src="{% static 'pms/js/plugins/metisMenu/jquery.metisMenu.js'%}"></script>
+    <script src="{% static 'pms/js/plugins/slimscroll/jquery.slimscroll.min.js'%}"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="{% static 'pms/js/inspinia.js' %}"></script>
+    <script src="{% static 'pms/js/plugins/pace/pace.min.js' %}"></script>
+
+    <!-- iCheck -->
+    <script src="{% static 'pms/js/plugins/iCheck/icheck.min.js' %}"></script>
+	<script>
+		$(document).ready(function () {
+			$('.i-checks').iCheck({
+				checkboxClass: 'icheckbox_square-green',
+				radioClass: 'iradio_square-green',
+			});
+		});
+	</script>
+	<!-- Toastr -->
+    <script src="{% static 'pms/js/plugins/toastr/toastr.min.js' %}"></script>
+	<!-- Sweet alert -->
+    <script src="{% static 'pms/js/plugins/sweetalert/sweetalert2.min.js'%}"></script>
+	<script src="{% static 'pms/js/plugins/dropzone/dropzone.js' %}"></script>
+	<!-- Data picker -->
+	<script src="{% static 'pms/js/plugins/datapicker/bootstrap-datepicker.js' %}"></script>
+	<!--Loading Button-->
+	<script src="{% static 'pms/js/plugins/ladda/spin.min.js'%}"></script>
+    <script src="{% static 'pms/js/plugins/ladda/ladda.min.js'%}"></script>
+    <script src="{% static 'pms/js/plugins/ladda/ladda.jquery.min.js'%}"></script>
+	{%if counter%}
+		<script>
+				$(document).ready(function() {
+						toastr.options = {
+							closeButton: true,
+							progressBar: true,
+							showMethod: 'slideDown',
+							timeOut: 4000
+						};
+						toastr.success('Today is ' + getWeekDate(), 'Welcome to Geo Marketplace');
+				});
+		</script>
+	{%endif%}
+	<script>
+		$(document).ready(function() {
+			
+			$('#date1 .input-group.date').datepicker({
+				todayBtn: "linked",
+				keyboardNavigation: false,
+				forceParse: false,
+				calendarWeeks: true,
+				autoclose: true
+			});
+
+			$('#date2 .input-group.date').datepicker({
+				todayBtn: "linked",
+				keyboardNavigation: false,
+				forceParse: false,
+				calendarWeeks: true,
+				autoclose: true
+			});
+			function getCookie(name) {
+				var cookieValue = null;
+				if (document.cookie && document.cookie != '') {
+					var cookies = document.cookie.split(';');
+					for (var i = 0; i < cookies.length; i++) {
+						var cookie = jQuery.trim(cookies[i]);
+						// Does this cookie string begin with the name we want?
+						if (cookie.substring(0, name.length + 1) == (name + '=')) {
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}   
+					}   
+				}   
+				return cookieValue;
+			}
+			//Dropzone.options.dropzoneDiv = false;
+			Dropzone.autoDiscover = false;
+			new Dropzone("#dropzoneDiv", {
+				url: "{%url 'upload'%}",
+                autoProcessQueue: false,
+				paramName: "file_data",
+                uploadMultiple: false,
+                parallelUploads: 1,
+                maxFiles: 1,
+				addRemoveLinks: true,
+				params: {'csrfmiddlewaretoken': getCookie('csrftoken')},
+				
+                // Dropzone settings
+                init: function() {
+					var l = $( '.ladda-button-demo' ).ladda();  //used to make the "Begin Calculation" loop
+					var uploadButton = document.querySelector("#upload_all")
+                    var myDropzone = this;
+					uploadButton.addEventListener("click", function(e) {
+						if(myDropzone.getQueuedFiles().length == 0){
+							swal({
+								title:"", 
+								text: "Drop a file before uploading!", 
+								type: "warning",
+								confirmButtonClass: 'btn btn-primary m-b buttonWidth',
+								buttonsStyling: false
+							});
+						}else{
+							l.ladda( 'start' );
+							e.preventDefault();
+							e.stopPropagation();
+							myDropzone.processQueue();
+						}
+                    });
+                    this.on("addedfile", function(file){
+						if(this.files.length > 1){
+							this.removeFile(this.files[0]);
+						}
+					});
+					this.on("sending", function(data, xhr, formData) {
+						formData.append("data_time", $("form input[name=data_time]").val());
+						formData.append("resolution", $("form input[name=resolution]").val());
+						formData.append("source", $("form input[name=source]").val());
+						formData.append("price", $("form input[name=price]").val());
+						formData.append("uploader", $("form input[name=uploader]").val());
+						formData.append("upload_time", $("form input[name=upload_time]").val());
+						
+						formData.append("public_or_not", $("form input[name=public_or_not]:checked").val());
+						
+						formData.append("tiled_or_not", $("form input[name=tiled_or_not]").prop("checked")? 1 : 0);
+						formData.append("tile_size", $("form input[name=tile_size]").val());
+						formData.append("description", $("textarea#description").val());
+					});
+					this.on("success", function(file, response){
+						l.ladda( 'stop' );
+						swal({
+                            title:"Success", 
+                            text: "File got uploaded successfully!", 
+                            type: "success",
+                            confirmButtonClass: 'btn btn-primary m-b buttonWidth',
+                            buttonsStyling: false
+                        }).then(function(){
+                            $(location).prop("href", "{%url 'upload'%}")
+                        });
+                        
+					});
+					this.on("error", function(file, response){
+						l.ladda( 'stop' );
+						swal({
+							title:"", 
+							text: response, 
+							type: "warning",
+							confirmButtonClass: 'btn btn-primary m-b buttonWidth',
+							buttonsStyling: false
+						});
+					});
+                }
+            });
+			$("form input[name=upload_time]").val(getDate());
+		});
+			
+		$("#tiled_or_not").on("ifChanged", function(){
+			$("#tile_size").val("")
+			$("#tile_size").prop("disabled", !$("#tiled_or_not").prop("checked"))
+		});
+		
+	</script>
+	<script>
+		function getDate(){
+			var today = new Date();
+			var month = today.getMonth();
+			month = month < 9 ? "0" + (month + 1) : (month + 1)
+			var day = today.getDate()
+			if(day < 10){
+				day = "0" + day;
+			}
+			var year = today.getFullYear()
+			return month + "/" + day + "/" + year;
+		}
+        function getWeekDate(){
+            var today = new Date();
+			var month = today.getMonth();
+			month = month < 9 ? "0" + (month + 1) : (month + 1)
+			var day = today.getDate()
+			if(day < 10){
+				day = "0" + day;
+			}
+			var year = today.getFullYear()
+            var weekdays = new Array(7);
+			weekdays[0] =  "Sunday";
+			weekdays[1] = "Monday";
+			weekdays[2] = "Tuesday";
+			weekdays[3] = "Wednesday";
+			weekdays[4] = "Thursday";
+			weekdays[5] = "Friday";
+			weekdays[6] = "Saturday";
+    		return month + "/" + day + "/" + year + ", " + weekdays[today.getDay()];
+        }
+	</script>
+	<script src="{% static 'pms/js/plugins/validate/jquery.validate.min.js'%}"></script>
+	<script>
+         $(document).ready(function(){
+             $("#dropzoneForm").validate({
+                 rules: {
+                     //price: {
+                         //required: true,
+                         //number: true
+                     //}
+                 }
+             });
+        });
+    </script>
+{%endblock%}

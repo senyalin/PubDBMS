@@ -1,0 +1,340 @@
+{%extends "./base.html"%}
+{% load static %}
+{%block cssPart%}
+	<link href="{% static 'pms/css/bootstrap.min.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/font-awesome/css/font-awesome.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/plugins/iCheck/custom.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/animate.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/style.css'%}" rel="stylesheet">
+    <link href="{% static 'pms/css/plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css'%}" rel="stylesheet">
+	<link href="{% static 'pms/css/plugins/sweetalert/sweetalert2.min.css'%}" rel="stylesheet">
+	<style>
+		.divBackground{
+            border: 1px solid rgba(0,0,0,0.02);
+            background: rgba(0,0,0,0.04);
+            padding: 10px;
+			height: 100px;
+        }
+		.buttonCSS{
+            width: 190px;
+		}
+		.buttonWidth{
+			width: 100px;
+		}
+	</style>
+{%endblock%}
+	
+{%block divPart%}			
+	<div class="row">
+		<div class="ibox-title">
+			<h3><strong>Make a payment</strong></h3>
+		</div>
+	<div class="ibox-content">
+		<div class="panel-group payments-method" id="accordion">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="pull-right">
+						<i class="fa fa-rub text-success"></i>
+					</div>
+					<h5 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion" href="order.html#collapseOne">Credit Point: ${{balance}}</a>
+					</h5>
+				</div>
+				<div id="collapseOne" class="panel-collapse collapse in">
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-md-10">
+								<h2>Summary</h2>
+								<strong>Product:</strong>{{publication.title}}<br>
+								<strong>Price:</strong><span class="text-navy">${{publication.price}}</span>
+								<p class="m-t">
+									Keywords: {{publication.keywords}}
+								</p>
+								<p class="m-t">
+									Authors: {{publication.authors}}
+								</p>
+								<P class="m-t">
+									Institution: {{publication.institution}}
+								</p>
+								<P class="m-t">
+									Category: {% if publication.category == 1%} Conference {%else%} Journal {%endif%}
+								</p>
+								<P class="m-t">
+									Publication Date: {{publication.publication_date}}
+								</p class="m-t">
+								<P class="m-t">
+									Abstract: {{publication.abstract|truncatechars:100}}
+								</p>
+								<a class="btn btn-success" onclick="payment('creditPoint')" >
+									<i class="fa fa-rub">
+										Pay with Credit Point
+									</i>
+								</a>
+							</div>
+						</div>
+					 </div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="pull-right">
+						<i class="fa fa-cc-paypal text-success"></i>
+					</div>
+					<h5 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion" href="order.html#collapseTwo">PayPal</a>
+					</h5>
+				</div>
+				<div id="collapseTwo" class="panel-collapse collapse">
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-md-10">
+								<h2>Summary</h2>
+								<strong>Product:</strong>{{publication.title}}<br>
+								<strong>Price:</strong><span class="text-navy">${{publication.price}}</span>
+								<p class="m-t">
+									Keywords: {{publication.keywords}}
+								</p>
+								<p class="m-t">
+									Authors: {{publication.authors}}
+								</p>
+								<P class="m-t">
+									Institution: {{publication.institution}}
+								</p>
+								<P class="m-t">
+									Category: {% if publication.category == 1%} Conference {%else%} Journal {%endif%}
+								</p>
+								<P class="m-t">
+									Publication Date: {{publication.publication_date}}
+								</p class="m-t">
+								<P class="m-t">
+									Abstract: {{publication.abstract|truncatechars:100}}
+								</p>
+								<a class="btn btn-success">
+									<i class="fa fa-cc-paypal">
+										Pay with PayPal
+									</i>
+								</a>
+
+							</div>
+
+						</div>
+					 </div>
+				</div>
+			</div>
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="pull-right">
+						<i class="fa fa-cc-amex text-success"></i>
+						<i class="fa fa-cc-mastercard text-warning"></i>
+						<i class="fa fa-cc-discover text-danger"></i>
+						<i class="fa fa-cc-visa text-success"></i>
+					</div>
+					<h5 class="panel-title">
+						<a data-toggle="collapse" data-parent="#accordion" href="order.html#collapseThree">Credit Card</a>
+					</h5>
+				</div>
+				<div id="collapseThree" class="panel-collapse collapse">
+					<div class="panel-body">
+
+						<div class="row">
+							<div class="col-md-4">
+								<h2>Summary</h2>
+								<strong>Product:</strong>{{publication.title}} <br>
+								<strong>Price:</strong><span class="text-navy">${{publication.price}}</span>
+
+								<p class="m-t">
+									Keywords: {{publication.keywords}}
+								</p>
+								<p class="m-t">
+									Authors: {{publication.authors}}
+								</p>
+								<P class="m-t">
+									Institution: {{publication.institution}}
+								</p>
+								<P class="m-t">
+									Category: {% if publication.category == 1%} Conference {%else%} Journal {%endif%}
+								</p>
+								<P class="m-t">
+									Publication Date: {{publication.publication_date}}
+								</p class="m-t">
+								<P class="m-t">
+									Abstract: {{publication.abstract|truncatechars:350}}
+								</p>
+							</div>
+							
+							<div class="col-md-8">
+								<form role="form" id="payment-form" action="" method="post">
+									{% csrf_token %}
+									<input type="hidden" id="publication_id" name="publication_id" value="{{publication.id}}">
+									<div class="row">
+										<div class="col-xs-7 col-md-7">
+											<div class="form-group">
+												<label>Card Number</label>
+												<div class="input-group">
+													<input type="text" class="form-control" id="card_number" name="card_number" placeholder="Enter your card number here">
+													<span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
+												</div>
+											</div>
+										</div>									
+
+										<div class="col-xs-5 col-md-5 pull-right">
+											<div class="form-group">
+												<label>Name on card</label>
+												<input type="text" class="form-control" id="card_name" name="card_name" placeholder="Enter your full name here">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-xs-7 col-md-7">
+											<div class="form-group">
+												<label>Expiration Date</label>
+												<input type="text" class="form-control" id="expiration" name="expiration" placeholder="MM / YY">
+											</div>
+										</div>
+										<div class="col-xs-5 col-md-5 pull-right">
+											<div class="form-group">
+												<label>CVC Code</label>
+												<input type="text" class="form-control" id="cvc" name="cvc" placeholder="CVC">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-xs-7 col-md-7">
+											<div class="form-group">
+												<label>Receiver's Name</label>
+												<input type="text" class="form-control" id="receiver_name" name="receiver_name">
+											</div>
+										</div>									
+
+										<div class="col-xs-5 col-md-5 pull-right">
+											<div class="form-group">
+												<label>Phone Number</label>
+												<input type="text" class="form-control" id="phone_number" name="phone_number" here">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-xs-7 col-md-7">
+											<div class="form-group">
+												<label>Address 1</label>
+												<input type="text" class="form-control" id="address1" name="address1" placeholder="Street address, P.O. box, Apartment name, etc.">
+											</div>
+										</div>									
+
+										<div class="col-xs-5 col-md-5 pull-right">
+											<div class="form-group">
+												<label>Address 2</label>
+												<input type="text" class="form-control" id="address2" name="address2" placeholder="Apt. #, Suite #, unit, building, etc.">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-xs-3 col-md-3">
+											<div class="form-group">
+												<label>City</label>
+												<input type="text" class="form-control" id="city" name="city">
+											</div>
+										</div>									
+
+										<div class="col-xs-3 col-md-3">
+											<div class="form-group">
+												<label>State</label>
+												<input type="text" class="form-control" id="state" name="state">
+											</div>
+										</div>
+										<div class="col-xs-3 col-md-3">
+											<div class="form-group">
+												<label>Zip Code</label>
+												<input type="text" class="form-control" id="zipcode" name="zipcode">
+											</div>
+										</div>
+										<div class="col-xs-3 col-md-3">
+											<div class="form-group">
+												<label>Country</label>
+												<input type="text" class="form-control" id="country" name="country">
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-3">
+											<button class="btn btn-white" onclick="javascript:window.history.back();"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Cancel and go back</button>
+										</div>
+										<div class="col-xs-6">
+											<input type="button" class="btn btn-primary" onclick="payment('creditCard')" value="Place this order!">
+										</div>
+									</div>
+								</form>
+
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+{%endblock%}
+
+{%block jsPart%}
+    <!-- Mainly scripts -->
+    <script src="{% static 'pms/js/jquery-2.1.1.js'%}"></script>
+    <script src="{% static 'pms/js/bootstrap.min.js'%}"></script>
+    <script src="{% static 'pms/js/plugins/metisMenu/jquery.metisMenu.js'%}"></script>
+    <script src="{% static 'pms/js/plugins/slimscroll/jquery.slimscroll.min.js'%}"></script>
+
+    <!-- Custom and plugin javascript -->
+    <script src="{% static 'pms/js/inspinia.js' %}"></script>
+    <script src="{% static 'pms/js/plugins/pace/pace.min.js' %}"></script>
+
+    <!-- iCheck -->
+    <script src="{% static 'pms/js/plugins/iCheck/icheck.min.js' %}"></script>
+	<script>
+		$(document).ready(function () {
+			$('.i-checks').iCheck({
+				checkboxClass: 'icheckbox_square-green',
+				radioClass: 'iradio_square-green',
+			});
+		});
+	</script>
+	<!-- Sweet alert -->
+    <script src="{% static 'pms/js/plugins/sweetalert/sweetalert2.min.js'%}"></script>
+	<script src="{% static 'pms/js/js.cookie.js'%}"></script>
+	<script>
+		function payment(paymentMethod){
+			var publication_id = $("#publication_id").val();
+			var csrftoken = Cookies.get("csrftoken");
+			function csrfSafeMethod(method) {
+				return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+			}
+			 $.ajaxSetup({
+							beforeSend: function(xhr, settings) {
+								if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+									xhr.setRequestHeader("X-CSRFToken", csrftoken);
+								}
+							}
+						});  
+			var posting = $.post("{%url 'payment_publication'%}", {
+												publication_id: publication_id,
+												paymentMethod: paymentMethod
+										});
+			posting.done(function(data){
+				var status = data.split("@")[0]
+				var message = data.split("@")[1]
+				 swal({
+                    title:"Transaction " + status, 
+					input: 'status',
+                    text: message, 
+                    type: status.toLowerCase(),
+                    confirmButtonClass: 'btn btn-primary m-b buttonWidth',
+                    buttonsStyling: false
+                }).then(function(){
+					if(status.toLowerCase()==="success"){
+						$(location).prop("href", "{%url 'search_publication'%}");
+					}
+                });
+			});
+		}
+	</script>
+{%endblock%}
